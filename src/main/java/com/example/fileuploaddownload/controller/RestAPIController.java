@@ -20,6 +20,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -42,7 +43,8 @@ import com.example.fileuploaddownload.repo.DocumentRepo;
 @RestController
 @RequestMapping("/files")
 public class RestAPIController {
-	private String fileBasePath = "E:\\files\\";
+	@Value("${file.upload-dir}")
+	private String uploadDir;
 	private DocumentRepo documentRepo;
 
 	public RestAPIController(DocumentRepo documentRepo) {
@@ -57,7 +59,7 @@ public class RestAPIController {
 	@PostMapping("/upload")
 	public ResponseEntity<?> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) {
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		Path path = Paths.get(fileBasePath + fileName);
+		Path path = Paths.get(uploadDir + fileName);
 		try {
 			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -111,7 +113,7 @@ public class RestAPIController {
 
 	@GetMapping("/download/{fileName:.+}")
 	public ResponseEntity<?> downloadFileFromLocal(@PathVariable String fileName) {
-		Path path = Paths.get(fileBasePath + fileName);
+		Path path = Paths.get(uploadDir + fileName);
 		Resource resource = null;
 		try {
 			resource = new UrlResource(path.toUri());
@@ -161,7 +163,7 @@ public class RestAPIController {
 	public void zipDownload(@RequestParam List<String> name, HttpServletResponse response) throws IOException {
 		ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
 		for (String fileName : name) {
-			FileSystemResource resource = new FileSystemResource(fileBasePath + fileName);
+			FileSystemResource resource = new FileSystemResource(uploadDir + fileName);
 			ZipEntry zipEntry = new ZipEntry(resource.getFilename());
 			zipEntry.setSize(resource.contentLength());
 			zipOut.putNextEntry(zipEntry);
