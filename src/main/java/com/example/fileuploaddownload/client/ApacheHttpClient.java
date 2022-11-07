@@ -1,4 +1,4 @@
-package com.example.fileuploaddownload;
+package com.example.fileuploaddownload.client;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -25,7 +25,7 @@ import org.apache.tika.config.TikaConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ApacheClient {
+public class ApacheHttpClient {
 
 	private Tika tika = new Tika();
 	private TikaConfig config = TikaConfig.getDefaultConfig();
@@ -34,7 +34,7 @@ public class ApacheClient {
 	private TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
 	};
 
-	public ApacheClient() {
+	public ApacheHttpClient() {
 		// @formatter:off
 		int timeout = 60;
 		RequestConfig config = RequestConfig.custom()
@@ -71,10 +71,9 @@ public class ApacheClient {
 
 	public static Map<String, Object> downloadAndUpload(String downloadUri, String uploadUri, String accessToken)
 			throws Exception {
-		ApacheClient client = new ApacheClient();
+		ApacheHttpClient client = new ApacheHttpClient();
 		byte[] imageBytes = client.download(downloadUri, accessToken);
-		//return client.uploadFile(imageBytes, uploadUri, accessToken);
-		return null;
+		return client.uploadFile(imageBytes, uploadUri, accessToken);
 	}
 
 	public byte[] download(String uri, String token) throws Exception {

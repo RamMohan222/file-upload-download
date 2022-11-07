@@ -120,6 +120,11 @@ public class RestAPIController {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
+		/*
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentDispositionFormData(fileName, fileName);
+		return ResponseEntity.ok().cacheControl(CacheControl.noCache()).headers(headers).body(resource);
+		*/
 		return ResponseEntity.ok()
 				// .contentType(MediaType.parseMediaType(contentType))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
