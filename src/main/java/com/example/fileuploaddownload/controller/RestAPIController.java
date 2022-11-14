@@ -56,6 +56,14 @@ public class RestAPIController {
 		return ResponseEntity.ok("OK");
 	}
 
+	@GetMapping("/redirect/{fileName:.+}")
+	void handleFoo(HttpServletResponse response, @PathVariable String fileName) throws IOException {
+		String redirectUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/download/")
+				.path(fileName).toUriString();
+		System.out.println("RedirectURI = " + redirectUri);
+		response.sendRedirect(redirectUri);
+	}
+
 	@PostMapping("/upload")
 	public ResponseEntity<?> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) {
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -121,10 +129,11 @@ public class RestAPIController {
 			e.printStackTrace();
 		}
 		/*
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentDispositionFormData(fileName, fileName);
-		return ResponseEntity.ok().cacheControl(CacheControl.noCache()).headers(headers).body(resource);
-		*/
+		 * HttpHeaders headers = new HttpHeaders();
+		 * headers.setContentDispositionFormData(fileName, fileName); return
+		 * ResponseEntity.ok().cacheControl(CacheControl.noCache()).headers(headers).
+		 * body(resource);
+		 */
 		return ResponseEntity.ok()
 				// .contentType(MediaType.parseMediaType(contentType))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")

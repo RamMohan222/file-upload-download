@@ -3,8 +3,6 @@ package com.example.fileuploaddownload.client;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -90,11 +88,20 @@ public class ApacheHttpAsyncClient {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String downloadUri = "http://localhost:8080/rx-files/download/abc.JPG";
+		String downloadUri = "http://localhost:8080/files/redirect/abc.JPG";
 		ApacheHttpAsyncClient client = new ApacheHttpAsyncClient();
 		byte[] bytes = client.download(downloadUri);
-		System.out.println("==>" + bytes.length);
-		FileOutputStream os = new FileOutputStream(new File("E:\\new-file.jpg"));
+		FileOutputStream os = new FileOutputStream(new File("E:\\one.jpg"));
+		IOUtils.copyLarge(new ByteArrayInputStream(bytes), os);
+		
+		downloadUri = "http://localhost:8080/rx-files/download/abc.JPG";
+		bytes = client.download(downloadUri);
+		os = new FileOutputStream(new File("E:\\two.jpg"));
+		IOUtils.copyLarge(new ByteArrayInputStream(bytes), os);
+		
+		downloadUri = "http://localhost:8080/rx-files/redirect/abc.JPG";
+		bytes = client.download(downloadUri);
+		os = new FileOutputStream(new File("E:\\three.jpg"));
 		IOUtils.copyLarge(new ByteArrayInputStream(bytes), os);
 	}
 }
